@@ -9,3 +9,5 @@ There is a remote chance that this may be incompatible with some devices, if the
 To use this with the UberGROM, just drop the GROMStartG.BIN into the >6000 slot on any base. If you are not using the GROM for anything else, put it on BOTH bases >9800 and >9804 (the first two). This works around a bug in the TI ROM related to "REVIEW MODULE LIBRARY" that will otherwise lock up the console.
 
 Advanced: If you want to run the GROM at another address, just change the powerup link address in the header and at offset >0092 in the binary file. The rest of the code will run on any GROM.
+
+I hand-assembled the GPL code, so I don't know if it will build in any GPL Assemblers. The syntax I use is that the destination comes first.
