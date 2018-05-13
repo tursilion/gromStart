@@ -1,0 +1,113 @@
+* 00-80 - search for a ROM cartridge named PROGRAM and launch it
+* Runs on the GPL Startup link, uses 8 bytes at >8340 (hopefully
+* out of the way enough for most cases!)
+* There is NO program link on this GROM. To prevent console lockup,
+* it should be copied to both the >9800 and >9802 bases, unless you
+* are using the REVIEW MODULE LIBRARY FEATURE (in which case you're
+* fine).
+* This code is written to load at >6000. You can put it at any other
+* GROM address by changing the powerup vector in the header, the rest
+* of the code is relocatable.
+
+* header: 	AA 00 00 00 60 90 00 00 
+			00 00 00 00 00 00 00 00
+			
+* Start here at >6010 (powerup link!)
+* 6010:
+6010	40 12	NOP							* padding, unused (start at 6012)
+6012	BF 42	DST @>8342,>6000			* set first bank to search
+		60 00
+
+LP
+6016	BF CF 	DST @>0000(@>8342),0		* set bank
+6018	7D 00
+601A	42 00
+601C	00 
+601D	D6 8F	CEQ @>6000,>AA				* check valid ROM header
+601F	DD 00
+6021	AA
+6022	40 75	BR @NEXTBANK				* next bank if not
+6024    BD 44   DST @>8344,@>6006			* get program address
+6026	8F DD
+6028 	06
+
+PROGLP
+6029 	8F 44	DCZ @>8344					* no more programs?
+602B	60 75	BS @NEXTBANK				* nope, done this search
+602D	BD 46	DST @>8346,@>8344			* save this link
+602F	44
+6030	BD 44	DST @>8344,@>0000(@>8344)	* get the next program link
+6032	CF 7D
+6034	00 44
+6036	95 46	DINCT @>8346				* point to program address
+6038	BD 40	DST @>8340,@>0000(@>8346)	* save program address in XML vector
+603A	CF 7D
+603C	00 46
+603E	95 46	DINCT @>8346				* point to filename length
+	
+* there are many ways to do a string compare. This is one of them.
+6040	35 00	MOVE 8 TO @>8350 FROM @>0000(@>8346)  * get program entry
+6042	08 50
+6044	CF 7D
+6046	00 46
+6048	D6 50 	CEQ @>8350,>07		* is it the right length?
+604A	07
+604B	40 29	BR @PROGLP					* no, next prog
+604D	D6 51	CEQ @>8351,>50		* P
+604F	50
+6050	40 29	BR @PROGLP					* no, next prog
+6052	D6 52	CEQ @>8352,>52		* R
+6054	52
+6055	40 29	BR @PROGLP					* no, next prog
+6057	D6 53	CEQ @>8353,>4F		* O
+6059	4F
+605A	40 29	BR @PROGLP					* no, next prog
+605C	D6 54	CEQ @>8354,>47		* G
+605E	47
+605F	40 29	BR @PROGLP					* no, next prog
+6061	D6 55	CEQ @>8355,>52		* R
+6063	52
+6064	40 29	BR @PROGLP					* no, next prog
+6066	D6 56	CEQ @>8356,>41		* A
+6068	41
+6069	40 29	BR @PROGLP					* no, next prog
+606B	D6 57	CEQ @>8357,>4D		* M
+606D	4D
+606E	40 29	BR @PROGLP					* no, next prog
+6070	BD 00	DST @>8300,@>8340			* copy the program address
+6072	40
+6073	40 A0	BR @LAUNCH					* otherwise, yes! Boot it!
+	
+* Last search failed, check the next bank of the ROM	
+NEXTBANK
+6075	95 42	DINCT @>8342				* next bank
+6077	D6 42	CEQ @>8343,>80				* are we done?
+6079	80
+607A	40 16	BR @LP						* nope!
+	
+* We failed to find PROGRAM. We should return to the startup code.
+* Thierry says to do this:
+RETURN
+607C	BD 90	DST *>8373,*>8372
+607E	72 90
+6080	73
+6081	96 72	DECT @>8372
+6083	00		RTN
+	
+(padding)
+
+* 6090: Powerup vector entry
+	Data >0000,>6012
+
+(padding)
+
+* 60A0: Launch (program address already in >8300)
+LAUNCH
+60A0	03		SCAN		* check keyboard
+60A1	D6 75	CEQ @>8375,>20		* holding space?
+60A3	20
+60A4	60 7C	BS RETURN			* don't launch
+60A6	07 20 	ALL >20		* clear the screen
+60A8	0F F0	XML >F0		* start it
+
+		
