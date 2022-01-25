@@ -1,0 +1,6 @@
+There are two small patches in 4A DOS, mostly meant to support the GROMStart package:
+
+1) The name "4A DOS" is only 6 characters long, and we are searching for the 7 character "PROGRAM". Rather than make a mess of the header, I just added a second program name PROGRAM which points to the same thing.
+2) When 4A DOS starts, it insists on loading CHARA1 from DSK1. With tons of memory at our disposal that felt silly, but I didn't want to make 4A DOS bigger than 8k, so instead I dropped CHARA1 in the leftover GROM space (there's still lots free) and added a small patch. The patch checks whether the GROM is present - if so, it loads CHARA1 from there instead. If not, it falls back on the normal behaviour.
+
+Neither patch will interfere with operation if you aren't using the GROMStart package.

@@ -1,3 +1,5 @@
+20180919
+
 Just a quickie that uses the GPL powerup code to search an attached multi-bank ROM (up to 512k) for a cartridge named 'PROGRAM'. If it finds it, it starts immediately without displaying the master title page.
 
 Although 'PROGRAM' can be on any bank of the ROM, it must be able to run successfully from the ROM cartridge before you add the GROM - the GROM just auto-selects it for you. If no 'PROGRAM' can be found, the title page is displayed as per normal.
@@ -11,3 +13,5 @@ To use this with the UberGROM, just drop the GROMStartG.BIN into the >6000 slot 
 Advanced: If you want to run the GROM at another address, just change the powerup link address in the header and at offset >0092 in the binary file. The rest of the code will run on any GROM.
 
 I hand-assembled the GPL code, so I don't know if it will build in any GPL Assemblers. The syntax I use is that the destination comes first.
+
+The patched 4ADOS is included here in both 8k version (for basic carts) and 512k version (for UberGROM cart) - they are the exact same data, the big one is just duplicated.

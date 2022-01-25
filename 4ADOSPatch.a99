@@ -1,0 +1,42 @@
+	AORG >63a6
+	B @>7Fb0
+
+	AORG >7FB0
+
+* char if chara1 is in GROM - this is an explicit
+* check at >60AA for 'CHARA1'
+	LI R0,>60AA		* set GROM address
+	MOVB R0,@>9C02
+	SWPB R0
+	MOVB R0,@>9C02
+	LI R0,>640D		* address of CHARA1 string
+	LI R2,6
+LP1
+	CB @>9800,*R0+	* test byte (both sides increment)
+	JNE GIVEUP
+	DEC R2
+	JNE LP1
+
+* if we get here, we matched successfully,
+* so just copy it from GROM instead!
+	LI R0,>FA4F		* >FFA, VDP write address
+	MOVB R0,@>8C02
+	SWPB R0
+	MOVB R0,@>8C02
+	
+	LI R2,>0400
+LP2
+	MOVB @>9800,@>8C00	* copy byte (both sides increment)
+	DEC R2
+	JNE LP2
+	INC R2			* we need a not equal return for success
+	JMP HOME		* jump is smaller than branch
+	
+GIVEUP
+	blwp @>2120		* try to load chara1
+	data >0008		* device
+HOME	
+	b @>63ac		* back to caller
+	
+	END
+	

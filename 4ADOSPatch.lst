@@ -1,0 +1,105 @@
+Asm994a TMS99000 Assembler - v3.010
+
+                * Asm994a Generated Register Equates
+                *
+      0000 0000 R0      EQU     0 
+      0000 0001 R1      EQU     1 
+      0000 0002 R2      EQU     2 
+      0000 0003 R3      EQU     3 
+      0000 0004 R4      EQU     4 
+      0000 0005 R5      EQU     5 
+      0000 0006 R6      EQU     6 
+      0000 0007 R7      EQU     7 
+      0000 0008 R8      EQU     8 
+      0000 0009 R9      EQU     9 
+      0000 000A R10     EQU     10
+      0000 000B R11     EQU     11
+      0000 000C R12     EQU     12
+      0000 000D R13     EQU     13
+      0000 000E R14     EQU     14
+      0000 000F R15     EQU     15
+                *
+   1                    AORG >63a6
+   2  63A6 0460         B @>7Fb0
+   2  63A8 7FB0  
+   3            
+   4                    AORG >7FB0
+   5            
+   6            * char if chara1 is in GROM - this is an explicit
+   7            * check at >60AA for 'CHARA1'
+   8  7FB0 0200         LI R0,>60AA             * set GROM address
+   8  7FB2 60AA  
+   9  7FB4 D800         MOVB R0,@>9C02
+   9  7FB6 9C02  
+  10  7FB8 06C0         SWPB R0
+  11  7FBA D800         MOVB R0,@>9C02
+  11  7FBC 9C02  
+  12  7FBE 0200         LI R0,>640D             * address of CHARA1 string
+  12  7FC0 640D  
+  13  7FC2 0202         LI R2,6
+  13  7FC4 0006  
+  14            LP1
+  15  7FC6 9C20         CB @>9800,*R0+  * test byte (both sides increment)
+  15  7FC8 9800  
+  16  7FCA 1612         JNE GIVEUP
+  17  7FCC 0602         DEC R2
+  18  7FCE 16FB         JNE LP1
+  19            
+  20            * if we get here, we matched successfully,
+  21            * so just copy it from GROM instead!
+  22  7FD0 0200         LI R0,>FA4F             * >FFA
+  22  7FD2 FA4F  
+  23  7FD4 D800         MOVB R0,@>8C02
+  23  7FD6 8C02  
+  24  7FD8 06C0         SWPB R0
+  25  7FDA D800         MOVB R0,@>8C02
+  25  7FDC 8C02  
+  26                    
+  27  7FDE 0202         LI R2,>0400
+  27  7FE0 0400  
+  28            LP2
+  29  7FE2 D820         MOVB @>9800,@>8C00      * copy byte (both sides increment)
+  29  7FE4 9800  
+  29  7FE6 8C00  
+  30  7FE8 0602         DEC R2
+  31  7FEA 16FB         JNE LP2
+  32  7FEC 0582         INC R2                  * we need a not equal return for success
+  33  7FEE 1003         JMP HOME                * jump is smaller than branch
+  34                    
+  35            GIVEUP
+  36  7FF0 0420         blwp @>2120             * try to load chara1
+  36  7FF2 2120  
+  37  7FF4 0008         data >0008              * device
+  38            HOME    
+  39  7FF6 0460         b @>63ac                * back to caller
+  39  7FF8 63AC  
+  40                    
+  41  7FFA 0000         END
+  41            
+
+
+ Assembly Complete - Errors: 0,  Warnings: 0
+
+
+ ------ Symbol Listing ------
+
+ GIVEUP ABS:7FF0 GIVEUP
+ HOME   ABS:7FF6 HOME
+ LP1    ABS:7FC6 LP1
+ LP2    ABS:7FE2 LP2
+ R0     ABS:0000 R0
+ R1     ABS:0001 R1
+ R10    ABS:000A R10
+ R11    ABS:000B R11
+ R12    ABS:000C R12
+ R13    ABS:000D R13
+ R14    ABS:000E R14
+ R15    ABS:000F R15
+ R2     ABS:0002 R2
+ R3     ABS:0003 R3
+ R4     ABS:0004 R4
+ R5     ABS:0005 R5
+ R6     ABS:0006 R6
+ R7     ABS:0007 R7
+ R8     ABS:0008 R8
+ R9     ABS:0009 R9
